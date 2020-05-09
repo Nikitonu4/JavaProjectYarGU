@@ -2,6 +2,8 @@ package sample;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,6 +20,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 
@@ -35,11 +38,23 @@ public class Main extends Application {
     private ObservableList<String> Flower = FXCollections.observableArrayList();
     private ObservableList<String> Math = FXCollections.observableArrayList();
     private static char[] Alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-    private static Random sRandom = new Random();
     private static int alphabetLength = Alphabet.length;
-    public static char getRandomChar() {
-        return Alphabet[sRandom.nextInt(alphabetLength)];
-    }
+    private ObservableList<Topic> Topic = FXCollections.observableArrayList();
+//    String randomElement = Animal.get(rand(Animal.size()));
+    private static Random rand= new Random();
+
+//    public char getRandomWord(){
+//        return Animal []
+//    }
+
+    private ObservableList<String> mainTopic = Animal;
+
+    private final Font[] fonts = {
+            new Font("Verdana Bold", 20),
+            new Font("Arial Italic", 20),
+            new Font("Tahoma", 20),
+            new Font("Times New Roman", 20)
+    };
 
     @Override
     public void init(){
@@ -73,6 +88,8 @@ public class Main extends Application {
         root.setTop(createMenu());
 
         root.setBottom(createFlowPane());
+
+        root.setCenter(createWord());
 //        TabPane root = new TabPane(mainActivity);
         root.setStyle("-fx-font-size: 20");
 
@@ -95,14 +112,14 @@ public class Main extends Application {
         choiceTopic.setStyle("-fx-font-size: 20");
         editMenu.getItems().add(choiceTopic);
 
-        Menu viewMenu = new Menu("View");
-        viewMenu.setStyle("-fx-font-size: 20");
-        MenuItem editFont = new MenuItem("Edit font");
-        editFont.setStyle("-fx-font-size: 20");
-        viewMenu.getItems().add(editFont);
-        MenuItem editBackground = new MenuItem("Edit background");
-        editBackground.setStyle("-fx-font-size: 20");
-        viewMenu.getItems().add(editBackground);
+//        Menu viewMenu = new Menu("View");
+//        viewMenu.setStyle("-fx-font-size: 20");
+//        MenuItem editFont = new MenuItem("Edit font");
+//        editFont.setStyle("-fx-font-size: 20");
+//        viewMenu.getItems().add(editFont);
+//        MenuItem editBackground = new MenuItem("Edit background");
+//        editBackground.setStyle("-fx-font-size: 20");
+//        viewMenu.getItems().add(editBackground);
 
         Menu exitMenu = new Menu("Exit");
         MenuItem exitItem = new MenuItem("Exit");
@@ -115,8 +132,52 @@ public class Main extends Application {
             Platform.exit();
         });
         exitMenu.getItems().add(exitItem);
+        Menu viewMenu = createViewMenu();
+        return new MenuBar(editMenu, viewMenu,exitMenu);
+    }
 
-        return new MenuBar(editMenu,viewMenu,exitMenu);
+    private Menu createViewMenu() {
+        Menu menuEdit = new Menu("View");
+        Menu menuFont = new Menu("Font selection");
+        ToggleGroup groupFont = new ToggleGroup();
+        for (int i = 0; i < fonts.length - 1; i++) {
+            RadioMenuItem itemFont = new RadioMenuItem(fonts[i].getName());
+            itemFont.setUserData(fonts[i]);
+            itemFont.setToggleGroup(groupFont);
+            menuFont.getItems().add(itemFont);
+        }
+        MenuItem defaultFont = new MenuItem("Default Font");
+        defaultFont.setDisable(true);
+
+        defaultFont.setOnAction((ActionEvent t) -> {
+//            .setFont(fonts[3]);
+            groupFont.getSelectedToggle().setSelected(false);
+            defaultFont.setDisable(true);
+        });
+
+        groupFont.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            public void changed(ObservableValue<? extends Toggle> ov,
+                                Toggle old_toggle, Toggle new_toggle) {
+                if (groupFont.getSelectedToggle() != null) {
+                    Font font = (Font) groupFont.getSelectedToggle().getUserData();
+//                    description.setFont(font);
+                    defaultFont.setDisable(false);
+                } else {
+                    defaultFont.setDisable(true);
+                }
+            }
+        });
+
+        menuEdit.getItems().addAll(menuFont, defaultFont);
+        return menuEdit;
+    }
+
+    private HBox createWord(Topic o){
+            HBox hBox = new HBox(20);
+
+
+            hBox.setPadding(new Insets(40));
+            return hBox;
     }
 
     private FlowPane createFlowPane(){
@@ -146,48 +207,43 @@ public class Main extends Application {
         label.setPrefHeight(60);
         label.setAlignment(Pos.CENTER);
         label.setBackground(new Background(new BackgroundFill(Color.BLACK,null,null)));
-
+        System.out.println(label.getText());
 //        label.setGraphic(imageView);
         label.setTextFill(Color.WHITE);
         addTranslateListener(label);
         return label;
     }
 
-    private Label createWord(){
-return null;
-    }
 
     private void addTranslateListener(Label node) {
+//
+//        scene.setOnKeyPressed(keyEvent -> {
+//            if(arr.stream().anyMatch(t->{ return keyEvent.getText().equals(t.getText().toLowerCase()); }))
+//                arr.stream().forEach(t->{
+//                    if(keyEvent.getText().equals(t.getText().toLowerCase())) {
+//                        t.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+//                    }else
+//                        t.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+//                });
+//        });
 
         node.addEventHandler(MouseEvent.ANY, (e)->node.requestFocus());
-
-//        node.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent mouseEvent) -> {
-//            if (mouseEvent.getButton() == MouseButton.SECONDARY)
-//                node.setTextFill(Color.BLACK);
-//
-//        });
 
         node.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent mouseEvent) -> {
             if ((mouseEvent.getClickCount() == 1)&&(mouseEvent.getButton() == MouseButton.PRIMARY)){
                 node.setTextFill(Color.RED);
+
 //                if(буква есть в слове)
                     node.setVisible(false);
             }
         });
 
-//        node.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent mouseEvent) -> {
-//            if (mouseEvent.getClickCount() == 2){
-//                node.setText(Character.toString(getRandomChar()));
-//            }});
-
         node.setOnMouseEntered((MouseEvent me) -> {
-//            System.out.println("Mouse entered");
             node.setStyle("-fx-font-size: 30");
             node.requestFocus();
         });
 
         node.setOnMouseExited((MouseEvent me) -> {
-//            System.out.println("Mouse exited");
             node.setStyle("-fx-font-size: 20");
         });
     }
@@ -200,14 +256,6 @@ return null;
 
     }
 
-    private void showMessage(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.getDialogPane().setStyle("-fx-font-size: 20px;");
-        alert.showAndWait();
-    }
 
     public static void main(String[] args) {
         launch(args);
