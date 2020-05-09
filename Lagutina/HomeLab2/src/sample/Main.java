@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.Flow;
@@ -61,14 +62,13 @@ public class Main extends Application {
     }
     private void reading(ObservableList<String> file, Scanner read) {
             String []str = read.nextLine().split(" +");
-            for(int i = 0; i < str.length; i++)
-                file.add(str[i]);
+        Collections.addAll(file, str);
             read.close();
     }
 
     @Override
-    public void start(Stage primaryStage) throws FileNotFoundException {
-        Tab mainActivity = new Tab("Игра");
+    public void start(Stage primaryStage){
+//        Tab mainActivity = new Tab("Game");
         BorderPane root = new BorderPane();
         root.setTop(createMenu());
 
@@ -126,15 +126,18 @@ public class Main extends Application {
 //потом разобраться в фотке
         FlowPane pane = new FlowPane();
         pane.setPadding(new Insets(40));
-        pane.setMargin(pane, new Insets(0.0, 10.0, 20.0, 0.0));
+        FlowPane.setMargin(pane, new Insets(0.0, 10.0, 20.0, 0.0));
         pane.setHgap(17);
         pane.setVgap(17);
         pane.setStyle("-fx-font-size: 20");
         for(int i = 0; i < alphabetLength; i++)
-        pane.getChildren().add(createLabels(Alphabet[i]));
-
+            pane.getChildren().add(createLabels(Alphabet[i]));
         return pane;
     }
+
+//    private isLetterinWord(){
+//
+//    }
 
     private Label createLabels(char s){
 
