@@ -26,28 +26,30 @@ import javafx.stage.Stage;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Collections;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.Flow;
 
 public class Main extends Application {
-    private ListView<String> dataView;
+
     private ObservableList<String> Animal = FXCollections.observableArrayList();
     private ObservableList<String> City = FXCollections.observableArrayList();
     private ObservableList<String> Flower = FXCollections.observableArrayList();
     private ObservableList<String> Math = FXCollections.observableArrayList();
+
     private static char[] Alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
     private static int alphabetLength = Alphabet.length;
-    private ObservableList<Topic> Topic = FXCollections.observableArrayList();
+
+    private HBox hBox = new HBox(20);
+
+    private String topic = "Animal";
+
 //    String randomElement = Animal.get(rand(Animal.size()));
-    private static Random rand= new Random();
 
 //    public char getRandomWord(){
 //        return Animal []
 //    }
 
-    private ObservableList<String> mainTopic = Animal;
+    private ObservableList<String>  mainTopic = Animal;
 
     private final Font[] fonts = {
             new Font("Verdana Bold", 20),
@@ -56,40 +58,38 @@ public class Main extends Application {
             new Font("Times New Roman", 20)
     };
 
-    @Override
-    public void init(){
-        try{
-            Scanner read = new Scanner(new FileReader("Animal.txt"));
-            reading(Animal, read);
+//    public void starting(){
+//        try{
+//            Scanner read = new Scanner(new FileReader("Animal.txt"));
+//            reading(Animal, read);
+//            read = new Scanner(new FileReader("City.txt"));
+//            reading(City, read);
+//            read = new Scanner(new FileReader("Flower.txt"));
+//            reading(Flower, read);
+//            read = new Scanner(new FileReader("Math.txt"));
+//            reading(Math, read);
+//
+//
+//        } catch (IOException e) {
+//            System.out.println("\nUnfortunately, the data from the file did not load.");
+//        }
+//    }
+//    private void reading(ObservableList<String> file, Scanner read) {
+//            String []str = read.nextLine().split(" +");
+//        Collections.addAll(file, str);
 //            read.close();
-            read = new Scanner(new FileReader("City.txt"));
-            reading(City, read);
-            read = new Scanner(new FileReader("Flower.txt"));
-            reading(Flower, read);
-//            read.close();
-            read = new Scanner(new FileReader("Math.txt"));
-            reading(Math, read);
-//            read.close();
+//    }
 
-        } catch (IOException e) {
-            System.out.println("\nUnfortunately, the data from the file did not load.");
-        }
-    }
-    private void reading(ObservableList<String> file, Scanner read) {
-            String []str = read.nextLine().split(" +");
-        Collections.addAll(file, str);
-            read.close();
-    }
 
     @Override
-    public void start(Stage primaryStage){
+    public void start(Stage primaryStage) throws FileNotFoundException {
 //        Tab mainActivity = new Tab("Game");
         BorderPane root = new BorderPane();
         root.setTop(createMenu());
 
         root.setBottom(createFlowPane());
 
-        root.setCenter(createWord());
+        root.setCenter(initialize("Animal"));
 //        TabPane root = new TabPane(mainActivity);
         root.setStyle("-fx-font-size: 20");
 
@@ -172,13 +172,66 @@ public class Main extends Application {
         return menuEdit;
     }
 
-    private HBox createWord(Topic o){
-            HBox hBox = new HBox(20);
+//    Scanner read = new Scanner(new FileReader("Animal.txt"));
+//    reading(Animal, read);
+//    read = new Scanner(new FileReader("City.txt"));
+//    reading(City, read);
+//    read = new Scanner(new FileReader("Flower.txt"));
+//    reading(Flower, read);
+//    read = new Scanner(new FileReader("Math.txt"));
+//    reading(Math, read);
+//
+//
+//} catch (IOException e) {
+//        System.out.println("\nUnfortunately, the data from the file did not load.");
+//        }
+//        }
+//private void reading(ObservableList<String> file, Scanner read) {
+//        String []str = read.nextLine().split(" +");
+//        Collections.addAll(file, str);
+//        read.close();
+//        }
+
+    private HBox initialize(String nameFile) throws FileNotFoundException {
+        Scanner read = new Scanner(new FileReader(nameFile+".txt"));
+        String []str = read.nextLine().split(" +");
+        ArrayList<String> file = new ArrayList<>();
+        Collections.addAll(file, str);
+        Random rand = new Random();
+        int numberR = rand.nextInt(file.size());
+        topic = file.get(numberR);
 
 
-            hBox.setPadding(new Insets(40));
-            return hBox;
+//        hBox.setPadding(new Insets(10));
+        char[] charTopic = topic.toCharArray();
+        for(int i = 0; i < topic.length(); i++) {
+            hBox.getChildren().add(createLabelsinWords(charTopic[i]));
+//            hBox.setVisible(false);
+        }
+        return hBox;
+//        createWord();
     }
+
+    private Label createLabelsinWords(char s){
+
+        Label label = new Label(" ");
+        label.setPrefWidth(60);
+        label.setPrefHeight(60);
+        label.setAlignment(Pos.CENTER);
+        label.setBackground(new Background(new BackgroundFill(Color.BLACK,null,null)));
+        System.out.println(label.getText());
+        label.setTextFill(Color.WHITE);
+//        label.setText(s+ "");
+//        addTranslateListener(label);
+
+        return label;
+    }
+
+
+//    private HBox createWord(){
+//
+////        System.out.println(topic);
+//    }
 
     private FlowPane createFlowPane(){
 //        InputStream input= getClass().getResourceAsStream("yk.jpg");
@@ -207,7 +260,7 @@ public class Main extends Application {
         label.setPrefHeight(60);
         label.setAlignment(Pos.CENTER);
         label.setBackground(new Background(new BackgroundFill(Color.BLACK,null,null)));
-        System.out.println(label.getText());
+//        System.out.println(label.getText());
 //        label.setGraphic(imageView);
         label.setTextFill(Color.WHITE);
         addTranslateListener(label);
@@ -215,8 +268,12 @@ public class Main extends Application {
     }
 
 
-    private void addTranslateListener(Label node) {
+//    private void showLetter(){
 //
+//    }
+
+    private void addTranslateListener(Label node) {
+
 //        scene.setOnKeyPressed(keyEvent -> {
 //            if(arr.stream().anyMatch(t->{ return keyEvent.getText().equals(t.getText().toLowerCase()); }))
 //                arr.stream().forEach(t->{
@@ -232,7 +289,7 @@ public class Main extends Application {
         node.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent mouseEvent) -> {
             if ((mouseEvent.getClickCount() == 1)&&(mouseEvent.getButton() == MouseButton.PRIMARY)){
                 node.setTextFill(Color.RED);
-
+//                if(node.setText() == )
 //                if(буква есть в слове)
                     node.setVisible(false);
             }
