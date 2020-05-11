@@ -41,13 +41,8 @@ public class Main extends Application {
 
     private HBox hBox = new HBox(20);
 
-    private String topic = "Animal";
-
-//    String randomElement = Animal.get(rand(Animal.size()));
-
-//    public char getRandomWord(){
-//        return Animal []
-//    }
+    private String topic = "Animal"; //тема на настоящий момент
+    private String word = ""; //слово которое загадываем
 
     private ObservableList<String>  mainTopic = Animal;
 
@@ -83,16 +78,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException {
-//        Tab mainActivity = new Tab("Game");
         BorderPane root = new BorderPane();
+
         root.setTop(createMenu());
-
         root.setBottom(createFlowPane());
-
-        root.setCenter(initialize("Animal"));
-//        TabPane root = new TabPane(mainActivity);
+        root.setCenter(createHbox("Animal"));
         root.setStyle("-fx-font-size: 20");
-
         primaryStage.setTitle("Guess the word");
         Scene scene = new Scene(root,1080,900);
         primaryStage.setScene(scene);
@@ -192,46 +183,46 @@ public class Main extends Application {
 //        read.close();
 //        }
 
-    private HBox initialize(String nameFile) throws FileNotFoundException {
-        Scanner read = new Scanner(new FileReader(nameFile+".txt"));
+    private String returnedWord(String nameFile) throws FileNotFoundException { //штука возвращает рандомное слово из nameFile
+        Scanner read = new Scanner(new FileReader(nameFile + ".txt"));
         String []str = read.nextLine().split(" +");
         ArrayList<String> file = new ArrayList<>();
         Collections.addAll(file, str);
         Random rand = new Random();
         int numberR = rand.nextInt(file.size());
-        topic = file.get(numberR);
+       return file.get(numberR);
+    }
 
+    private HBox createHbox(String nameFile) throws FileNotFoundException {
+        word = returnedWord(nameFile); //глобальшина
 
-//        hBox.setPadding(new Insets(10));
-        char[] charTopic = topic.toCharArray();
-        for(int i = 0; i < topic.length(); i++) {
-            hBox.getChildren().add(createLabelsinWords(charTopic[i]));
-//            hBox.setVisible(false);
+        char[] charWopic = word.toCharArray(); //делаем массив из строки
+
+        for(int i = 0; i < word.length(); i++) {
+            hBox.getChildren().add(createLabelsinWords(charWopic[i]));
+            hBox.getChildren().set(i,createLabelsinWords(charWopic[i]));
+        }
+
+        System.out.println("Первая буква:" + hBox.getChildren().get(0).toString());
+
+        for (int i = 0; i < word.length() ; i++) {
+            System.out.println("Буква:"+  hBox.getChildren().get(i));
         }
         return hBox;
-//        createWord();
     }
 
     private Label createLabelsinWords(char s){
 
-        Label label = new Label(" ");
+        Label label = new Label(s + "");
         label.setPrefWidth(60);
         label.setPrefHeight(60);
         label.setAlignment(Pos.CENTER);
         label.setBackground(new Background(new BackgroundFill(Color.BLACK,null,null)));
         System.out.println(label.getText());
         label.setTextFill(Color.WHITE);
-//        label.setText(s+ "");
-//        addTranslateListener(label);
 
         return label;
     }
-
-
-//    private HBox createWord(){
-//
-////        System.out.println(topic);
-//    }
 
     private FlowPane createFlowPane(){
 //        InputStream input= getClass().getResourceAsStream("yk.jpg");
