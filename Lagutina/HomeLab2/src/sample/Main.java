@@ -11,47 +11,37 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.Flow;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
+import java.util.Scanner;
 
 public class Main extends Application {
 
-    private ObservableList<String> Animal = FXCollections.observableArrayList();
-    private ObservableList<String> City = FXCollections.observableArrayList();
-    private ObservableList<String> Flower = FXCollections.observableArrayList();
-    private ObservableList<String> Math = FXCollections.observableArrayList();
-
     private static char[] Alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
     private static int alphabetLength = Alphabet.length;
-
-    private HBox hBox = new HBox(20);
-
-    private String topic = "Animal"; //тема на настоящий момент
-    private String word = ""; //слово которое загадываем
-
-    private ObservableList<String>  mainTopic = Animal;
-
     private final Font[] fonts = {
             new Font("Verdana Bold", 20),
             new Font("Arial Italic", 20),
             new Font("Tahoma", 20),
             new Font("Times New Roman", 20)
     };
+    private ObservableList<String> Animal = FXCollections.observableArrayList();
+    private ObservableList<String> City = FXCollections.observableArrayList();
+    private ObservableList<String> Flower = FXCollections.observableArrayList();
+    private ObservableList<String> Math = FXCollections.observableArrayList();
+    private String topic = "Animal"; //тема на настоящий момент
+    private String word = ""; //слово которое загадываем
+    private ObservableList<String> mainTopic = Animal;
 
 //    public void starting(){
 //        try{
@@ -75,6 +65,9 @@ public class Main extends Application {
 //            read.close();
 //    }
 
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException {
@@ -85,12 +78,12 @@ public class Main extends Application {
         root.setCenter(createHbox("Animal"));
         root.setStyle("-fx-font-size: 20");
         primaryStage.setTitle("Guess the word");
-        Scene scene = new Scene(root,1080,900);
+        Scene scene = new Scene(root, 1080, 900);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    private MenuBar createMenu(){
+    private MenuBar createMenu() {
         Menu editMenu = new Menu("Edit");
         editMenu.setStyle("-fx-font-size: 20");
         MenuItem editWords = new MenuItem("Edit list of words");
@@ -114,7 +107,7 @@ public class Main extends Application {
 
         Menu exitMenu = new Menu("Exit");
         MenuItem exitItem = new MenuItem("Exit");
-        exitItem.setOnAction(e-> {
+        exitItem.setOnAction(e -> {
             try {
                 stop();
             } catch (Exception ex) {
@@ -124,8 +117,28 @@ public class Main extends Application {
         });
         exitMenu.getItems().add(exitItem);
         Menu viewMenu = createViewMenu();
-        return new MenuBar(editMenu, viewMenu,exitMenu);
+        return new MenuBar(editMenu, viewMenu, exitMenu);
     }
+
+//    Scanner read = new Scanner(new FileReader("Animal.txt"));
+//    reading(Animal, read);
+//    read = new Scanner(new FileReader("City.txt"));
+//    reading(City, read);
+//    read = new Scanner(new FileReader("Flower.txt"));
+//    reading(Flower, read);
+//    read = new Scanner(new FileReader("Math.txt"));
+//    reading(Math, read);
+//
+//
+//} catch (IOException e) {
+//        System.out.println("\nUnfortunately, the data from the file did not load.");
+//        }
+//        }
+//private void reading(ObservableList<String> file, Scanner read) {
+//        String []str = read.nextLine().split(" +");
+//        Collections.addAll(file, str);
+//        read.close();
+//        }
 
     private Menu createViewMenu() {
         Menu menuEdit = new Menu("View");
@@ -163,68 +176,56 @@ public class Main extends Application {
         return menuEdit;
     }
 
-//    Scanner read = new Scanner(new FileReader("Animal.txt"));
-//    reading(Animal, read);
-//    read = new Scanner(new FileReader("City.txt"));
-//    reading(City, read);
-//    read = new Scanner(new FileReader("Flower.txt"));
-//    reading(Flower, read);
-//    read = new Scanner(new FileReader("Math.txt"));
-//    reading(Math, read);
-//
-//
-//} catch (IOException e) {
-//        System.out.println("\nUnfortunately, the data from the file did not load.");
-//        }
-//        }
-//private void reading(ObservableList<String> file, Scanner read) {
-//        String []str = read.nextLine().split(" +");
-//        Collections.addAll(file, str);
-//        read.close();
-//        }
-
     private String returnedWord(String nameFile) throws FileNotFoundException { //штука возвращает рандомное слово из nameFile
         Scanner read = new Scanner(new FileReader(nameFile + ".txt"));
-        String []str = read.nextLine().split(" +");
+        String[] str = read.nextLine().split(" +");
         ArrayList<String> file = new ArrayList<>();
         Collections.addAll(file, str);
         Random rand = new Random();
         int numberR = rand.nextInt(file.size());
-       return file.get(numberR);
+        return file.get(numberR);
     }
 
     private HBox createHbox(String nameFile) throws FileNotFoundException {
-        word = returnedWord(nameFile); //глобальшина
+        HBox hBox = new HBox(50);
+        hBox.setPadding(new Insets(40));
+        FlowPane.setMargin(hBox, new Insets(40.0, 40.0, 40.0, 40.0));
+        word = returnedWord(nameFile); //глобальщина
 
-        char[] charWopic = word.toCharArray(); //делаем массив из строки
-
-        for(int i = 0; i < word.length(); i++) {
-            hBox.getChildren().add(createLabelsinWords(charWopic[i]));
-            hBox.getChildren().set(i,createLabelsinWords(charWopic[i]));
+        char[] charWord = word.toCharArray(); //делаем массив из строки
+        for (int i = 0; i < word.length(); i++) {
+            hBox.getChildren().add(createLabelsinWords(charWord[i]));
+            hBox.getChildren().set(i, createLabelsinWords(charWord[i]));
+            HBox.setHgrow(hBox, Priority.ALWAYS);
         }
 
         System.out.println("Первая буква:" + hBox.getChildren().get(0).toString());
 
-        for (int i = 0; i < word.length() ; i++) {
-            System.out.println("Буква:"+  hBox.getChildren().get(i));
+        System.out.println(word);
+//        hBox.getChildren().get(2).add(createLabelsinWords(charWord[2]));
+
+        hBox.getChildren().get(2);
+        for (int i = 0; i < word.length(); i++) {
+            System.out.println("Буква:" + hBox.getChildren().get(i));
         }
         return hBox;
     }
 
-    private Label createLabelsinWords(char s){
+    private Label createLabelsinWords(char s) {
 
-        Label label = new Label(s + "");
-        label.setPrefWidth(60);
-        label.setPrefHeight(60);
+        Label label = new Label("");
+        label.setPrefWidth(100);
+        label.setPrefHeight(100);
         label.setAlignment(Pos.CENTER);
-        label.setBackground(new Background(new BackgroundFill(Color.BLACK,null,null)));
+        label.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
         System.out.println(label.getText());
         label.setTextFill(Color.WHITE);
+        label.setStyle("-fx-font-size: 80");
 
         return label;
     }
 
-    private FlowPane createFlowPane(){
+    private FlowPane createFlowPane() {
 //        InputStream input= getClass().getResourceAsStream("yk.jpg");
 //        Image image = new Image(input);
 //        ImageView imageView = new ImageView(image);
@@ -235,22 +236,18 @@ public class Main extends Application {
         pane.setHgap(17);
         pane.setVgap(17);
         pane.setStyle("-fx-font-size: 20");
-        for(int i = 0; i < alphabetLength; i++)
+        for (int i = 0; i < alphabetLength; i++)
             pane.getChildren().add(createLabels(Alphabet[i]));
         return pane;
     }
 
-//    private isLetterinWord(){
-//
-//    }
+    private Label createLabels(char s) {
 
-    private Label createLabels(char s){
-
-        Label label = new Label(s+"");
+        Label label = new Label(s + "");
         label.setPrefWidth(60);
         label.setPrefHeight(60);
         label.setAlignment(Pos.CENTER);
-        label.setBackground(new Background(new BackgroundFill(Color.BLACK,null,null)));
+        label.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
 //        System.out.println(label.getText());
 //        label.setGraphic(imageView);
         label.setTextFill(Color.WHITE);
@@ -258,10 +255,15 @@ public class Main extends Application {
         return label;
     }
 
+    private void showLetter(String letter) {
+        char[] charWord = word.toCharArray(); //делаем массив из строки
+        for (int i = 0; i < word.length(); i++) {
+            word.indexOf(letter, i);
 
-//    private void showLetter(){
-//
-//    }
+
+        }
+        System.out.println(letter);
+    }
 
     private void addTranslateListener(Label node) {
 
@@ -275,14 +277,20 @@ public class Main extends Application {
 //                });
 //        });
 
-        node.addEventHandler(MouseEvent.ANY, (e)->node.requestFocus());
+        node.addEventHandler(MouseEvent.ANY, (e) -> node.requestFocus());
 
         node.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent mouseEvent) -> {
-            if ((mouseEvent.getClickCount() == 1)&&(mouseEvent.getButton() == MouseButton.PRIMARY)){
-                node.setTextFill(Color.RED);
+            if ((mouseEvent.getClickCount() == 1) && (mouseEvent.getButton() == MouseButton.PRIMARY)) {
+                boolean indexOfLetter = word.contains(node.getText());
+                if (indexOfLetter) {
+                    showLetter(node.getText());
+                    node.setVisible(false);
+                }
+//                node.setTextFill(Color.RED);
+
 //                if(node.setText() == )
 //                if(буква есть в слове)
-                    node.setVisible(false);
+
             }
         });
 
@@ -296,16 +304,8 @@ public class Main extends Application {
         });
     }
 
-    private void ButtonEdit(){
+    private void ButtonEdit() {
 //        String str = dataView.getSelectionModel().getSelectedItem();
         EditTopicDialog edit = new EditTopicDialog();
-
-
-
-    }
-
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
