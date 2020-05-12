@@ -43,29 +43,8 @@ public class Main extends Application {
     private String topic = "Animal"; //тема на настоящий момент
     private String word = ""; //слово которое загадываем
     private ObservableList<Integer> records = FXCollections.observableArrayList();
-
-
-//    public void starting(){
-//        try{
-//            Scanner read = new Scanner(new FileReader("Animal.txt"));
-//            reading(Animal, read);
-//            read = new Scanner(new FileReader("City.txt"));
-//            reading(City, read);
-//            read = new Scanner(new FileReader("Flower.txt"));
-//            reading(Flower, read);
-//            read = new Scanner(new FileReader("Math.txt"));
-//            reading(Math, read);
-//
-//
-//        } catch (IOException e) {
-//            System.out.println("\nUnfortunately, the data from the file did not load.");
-//        }
-//    }
-//    private void reading(ObservableList<String> file, Scanner read) {
-//            String []str = read.nextLine().split(" +");
-//        Collections.addAll(file, str);
-//            read.close();
-//    }
+    private int numberOfLetter = 0;
+    public Record counting = new Record(15);
 
     public static void main(String[] args) {
         launch(args);
@@ -105,7 +84,6 @@ public class Main extends Application {
         MenuItem cityTopic = new MenuItem("City");
         MenuItem flowerTopic = new MenuItem("Flower");
         MenuItem mathTopic = new MenuItem("Math");
-
 
         TopicMenu.getItems().add(animalTopic);
         TopicMenu.getItems().add(cityTopic);
@@ -259,13 +237,14 @@ public class Main extends Application {
 
     private VBox createVbox() {
         VBox vbox = new VBox();
-        Record recordNow = new Record(15, 0, 0, 0);
-//        VBox.setMargin(vbox, new Insets(40.0, 40.0, 40.0, 40.0));
         vbox.setPadding(new Insets(40));
-        Label label = new Label("Очков сейчас:" + recordNow.getRecordNow());
+        Label cNow = new Label("Очков сейчас:");
+        Label label = new Label(counting.getCounting() + "");
+        counting.countingProperty().addListener((observable, oldValue, newValue) ->
+                label.setText(counting.toString()));
         label.setStyle("-fx-font-size: 20");
-        vbox.getChildren().add(label);
-
+        vbox.getChildren().addAll(cNow, label);
+//        vbox.getChildren().add(label);
         return vbox;
     }
 
@@ -320,6 +299,14 @@ public class Main extends Application {
             int index = word.indexOf(letter, i); //если несколько вхождений, начинаем с индекса последнего вхождения
             if (index != -1) {
                 hBox.getChildren().set(index, createLabelsinWords(charWord[index]));
+                numberOfLetter++;
+                System.out.println(numberOfLetter);
+                if (numberOfLetter == word.length()) {
+                    System.out.println("новое слово!");
+                    clearRoot();
+                    numberOfLetter = 0;
+                    return;
+                }
             } else {
                 return;
             }
@@ -328,14 +315,19 @@ public class Main extends Application {
 
     private void addTranslateListener(Label node) {
 
-//        node.setOnKeyPressed(keyEvent -> {
-//            if(KeyEvent keyEvent.stream().anyMatch(t-> keyEvent.getText().equals(keyEvent.getText().toLowerCase()))
-//                arr.stream().forEach(t->{
-//                    if(keyEvent.getText().equals(t.getText().toLowerCase())) {
-//                        t.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-//                    }
-//                });
-//        });
+        node.setOnKeyPressed(keyEvent -> {
+                    boolean indexOfLetter = word.contains(keyEvent.getText());
+                    if (indexOfLetter) {
+                        showLetter(keyEvent.getText());
+                        System.out.println(keyEvent.getText());
+                    } else {
+                        counting.setCounting(counting.getCounting() - 1);
+                        System.out.println(keyEvent.getText());
+
+                    }
+                    node.setVisible(false);
+                }
+        );
 
         node.addEventHandler(MouseEvent.ANY, (e) -> node.requestFocus());
 
@@ -345,7 +337,10 @@ public class Main extends Application {
                 if (indexOfLetter) {
                     showLetter(node.getText());
                 } else {
-                    counting--;
+                    counting.setCounting(counting.getCounting() - 1);
+                    if (counting.getCounting() == 0)
+                        gameOver();
+                    System.out.println("сделал");
                 }
                 node.setVisible(false);
             }
@@ -359,6 +354,24 @@ public class Main extends Application {
         node.setOnMouseExited((MouseEvent m) -> {
             node.setStyle("-fx-font-size: 20");
         });
+    }
+
+    private void gameOver() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Game Over");
+        alert.setHeaderText(null);
+        alert.setContentText("GAME OVER");
+
+        alert.showAndWait();
+    }
+
+    private void showMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.getDialogPane().setStyle("-fx-font-size: 20px;");
+        alert.showAndWait();
     }
 
     private void ButtonEdit() {
