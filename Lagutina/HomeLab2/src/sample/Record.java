@@ -45,4 +45,6 @@ public class Record {
     public void setBestRecord3(int bestRecord3) {
         this.bestRecord3 = bestRecord3;
     }
+
+
 }

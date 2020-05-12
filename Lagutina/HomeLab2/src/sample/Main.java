@@ -87,6 +87,40 @@ public class Main extends Application {
     }
 
     private MenuBar createMenu() {
+
+        Menu TopicMenu = new Menu("Topic");
+
+        MenuItem animalTopic = new MenuItem("Animal");
+        MenuItem cityTopic = new MenuItem("City");
+        MenuItem flowerTopic = new MenuItem("Flower");
+        MenuItem mathTopic = new MenuItem("Math");
+
+
+        TopicMenu.getItems().add(animalTopic);
+        TopicMenu.getItems().add(cityTopic);
+        TopicMenu.getItems().add(flowerTopic);
+        TopicMenu.getItems().add(mathTopic);
+
+
+        animalTopic.setOnAction((ActionEvent event) -> {
+            topic = "Animal";
+        });
+
+        cityTopic.setOnAction((ActionEvent event) -> {
+            topic = "City";
+        });
+
+        flowerTopic.setOnAction((ActionEvent event) -> {
+            topic = "Flower";
+        });
+
+        mathTopic.setOnAction((ActionEvent event) -> {
+            topic = "Math";
+        });
+
+
+        /////////////////////////
+
         Menu editMenu = new Menu("Edit");
         editMenu.setStyle("-fx-font-size: 20");
         MenuItem editWords = new MenuItem("Edit list of words");
@@ -99,6 +133,7 @@ public class Main extends Application {
 //        MenuItem choiceTopic = new MenuItem("Choosing a topic for words");
 
         Menu editTopic = new Menu("Choosing a topic for words");
+
         ObservableList<String> topics = FXCollections.observableArrayList("Animal", "City", "Flower", "Math");
         ComboBox<String> topicsComboBox = new ComboBox<String>(topics);
         topicsComboBox.setValue("Animal"); //по умолчанию
@@ -131,7 +166,7 @@ public class Main extends Application {
         });
         exitMenu.getItems().add(exitItem);
         Menu viewMenu = createViewMenu();
-        return new MenuBar(editMenu, viewMenu, exitMenu);
+        return new MenuBar(editMenu, viewMenu, exitMenu, TopicMenu);
     }
 
 //    Scanner read = new Scanner(new FileReader("Animal.txt"));
