@@ -43,7 +43,7 @@ public class Main extends Application {
     private String topic = "Animal"; //тема на настоящий момент
     private String word = ""; //слово которое загадываем
     private ObservableList<Integer> records = FXCollections.observableArrayList();
-//    private int counting = 15;
+    private int counting = 15;
 
 //    public void starting(){
 //        try{
@@ -78,7 +78,7 @@ public class Main extends Application {
         root.setTop(createMenu());
         root.setBottom(createFlowPane());
         root.setCenter(createHbox(topic));
-        root.setRight(createVbox());
+        root.setLeft(createVbox());
         root.setStyle("-fx-font-size: 20");
         primaryStage.setTitle("Guess the word");
         Scene scene = new Scene(root, 1080, 900);
@@ -209,9 +209,10 @@ public class Main extends Application {
     private VBox createVbox() {
         VBox vbox = new VBox();
         Record recordNow = new Record(15, 0, 0, 0);
-
+//        VBox.setMargin(vbox, new Insets(40.0, 40.0, 40.0, 40.0));
         vbox.setPadding(new Insets(40));
         Label label = new Label("Очков сейчас:" + recordNow.getRecordNow());
+        label.setStyle("-fx-font-size: 20");
         vbox.getChildren().add(label);
 
         return vbox;
@@ -222,7 +223,7 @@ public class Main extends Application {
         label.setPrefWidth(100);
         label.setPrefHeight(100);
         label.setAlignment(Pos.CENTER);
-        label.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+        label.setBackground(new Background(new BackgroundFill(Color.BISQUE, null, null)));
         System.out.println(label.getText());
         label.setTextFill(Color.BLACK);
         label.setStyle("-fx-font-size: 80");
@@ -268,6 +269,8 @@ public class Main extends Application {
             int index = word.indexOf(letter, i); //если несколько вхождений, начинаем с индекса последнего вхождения
             if (index != -1) {
                 hBox.getChildren().set(index, createLabelsinWords(charWord[index]));
+            } else {
+                return;
             }
         }
     }
@@ -291,6 +294,7 @@ public class Main extends Application {
                 if (indexOfLetter) {
                     showLetter(node.getText());
                 } else {
+                    counting--;
                     //тут надо минуснуть счетчик
                 }
                 node.setVisible(false);
