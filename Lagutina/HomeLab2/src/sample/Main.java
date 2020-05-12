@@ -4,8 +4,6 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,10 +18,8 @@ import javafx.stage.Stage;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
-import java.util.Scanner;
+import java.io.PrintWriter;
+import java.util.*;
 
 public class Main extends Application {
     private HBox hBox = new HBox(50);
@@ -36,15 +32,11 @@ public class Main extends Application {
             new Font("Tahoma", 20),
             new Font("Times New Roman", 20)
     };
-    private ObservableList<String> Animal = FXCollections.observableArrayList();
-    private ObservableList<String> City = FXCollections.observableArrayList();
-    private ObservableList<String> Flower = FXCollections.observableArrayList();
-    private ObservableList<String> Math = FXCollections.observableArrayList();
     private String topic = "Animal"; //тема на настоящий момент
     private String word = ""; //слово которое загадываем
-    private ObservableList<Integer> records = FXCollections.observableArrayList();
     private int numberOfLetter = 0;
     public Record counting = new Record(15);
+    private int numberOfWords = 0;
 
     public static void main(String[] args) {
         launch(args);
@@ -116,9 +108,34 @@ public class Main extends Application {
         MenuItem editWords = new MenuItem("Edit list of words");
         editWords.setStyle("-fx-font-size: 20");
         editWords.setOnAction((ActionEvent event) -> {
-            ButtonEdit();
+//            ButtonEdit();
         });
         editMenu.getItems().add(editWords);
+
+        Menu recordsMenu = new Menu("Records");
+        MenuItem recordsItem = new MenuItem("Records");
+
+        recordsMenu.getItems().add(recordsItem);
+
+        recordsItem.setOnAction(ActionEvent -> {
+
+                    Scanner read = null;
+                    try {
+                        read = new Scanner(new FileReader("Records.txt"));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    String[] str = read.nextLine().split(" +");
+                    Integer[] inti = new Integer[3];
+                    inti[0] = Integer.parseInt(str[0]);
+                    inti[1] = Integer.parseInt(str[1]);
+                    inti[2] = Integer.parseInt(str[2]);
+                    Arrays.sort(inti);
+                    viewRecords(inti);
+
+                }
+        );
+
 
 //        MenuItem choiceTopic = new MenuItem("Choosing a topic for words");
 
@@ -149,7 +166,7 @@ public class Main extends Application {
         });
         exitMenu.getItems().add(exitItem);
         Menu viewMenu = createViewMenu();
-        return new MenuBar(editMenu, viewMenu, exitMenu, TopicMenu);
+        return new MenuBar(editMenu, viewMenu, exitMenu, TopicMenu, recordsMenu);
     }
 
 //    Scanner read = new Scanner(new FileReader("Animal.txt"));
@@ -286,14 +303,12 @@ public class Main extends Application {
         label.setPrefHeight(60);
         label.setAlignment(Pos.CENTER);
         label.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
-//        System.out.println(label.getText());
-//        label.setGraphic(imageView);
         label.setTextFill(Color.WHITE);
         addTranslateListener(label);
         return label;
     }
 
-    private void showLetter(String letter) { //открытие буквы
+    private void showLetter(String letter) throws FileNotFoundException { //открытие буквы
         char[] charWord = word.toCharArray(); //делаем массив из строки
         for (int i = 0; i < word.length(); i++) {
             int index = word.indexOf(letter, i); //если несколько вхождений, начинаем с индекса последнего вхождения
@@ -302,6 +317,7 @@ public class Main extends Application {
                 numberOfLetter++;
                 System.out.println(numberOfLetter);
                 if (numberOfLetter == word.length()) {
+                    rewriteRecord();
                     System.out.println("новое слово!");
                     clearRoot();
                     numberOfLetter = 0;
@@ -313,14 +329,34 @@ public class Main extends Application {
         }
     }
 
+    private void rewriteRecord() throws FileNotFoundException {
+        Scanner read = new Scanner(new FileReader("Records.txt"));
+        String[] str = read.nextLine().split(" +");
+        for (int i = 0; i < 3; i++)
+            if (Integer.parseInt(str[i]) < counting.getCounting())
+                str[i] = counting.toString();
+        read.close();
+
+        PrintWriter out = new PrintWriter("Record.txt");
+        out.write("");
+        for (int i = 0; i < str.length; i++)
+            out.print(str[i] + " ");
+
+        out.close();
+    }
+
     private void addTranslateListener(Label node) {
 
         node.setOnKeyPressed(keyEvent -> {
-                    boolean indexOfLetter = word.contains(keyEvent.getText());
-                    if (indexOfLetter) {
-                        showLetter(keyEvent.getText());
-                        System.out.println(keyEvent.getText());
-                    } else {
+            boolean indexOfLetter = word.contains(keyEvent.getText());
+            if (indexOfLetter) {
+                try {
+                    showLetter(keyEvent.getText());
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(keyEvent.getText());
+            } else {
                         counting.setCounting(counting.getCounting() - 1);
                         System.out.println(keyEvent.getText());
 
@@ -335,7 +371,11 @@ public class Main extends Application {
             if ((mouseEvent.getClickCount() == 1) && (mouseEvent.getButton() == MouseButton.PRIMARY)) {
                 boolean indexOfLetter = word.contains(node.getText());
                 if (indexOfLetter) {
-                    showLetter(node.getText());
+                    try {
+                        showLetter(node.getText());
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     counting.setCounting(counting.getCounting() - 1);
                     if (counting.getCounting() == 0)
@@ -356,12 +396,21 @@ public class Main extends Application {
         });
     }
 
+    private void viewRecords(Integer[] inti) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Records");
+        alert.setHeaderText(null);
+        alert.setContentText("First record: " + inti[0] + " слов" + "\n" + "Second record: " + inti[1] + " слов" + "\n" + "Thid record: " + inti[2] + " слов");
+        clearRoot();
+        alert.showAndWait();
+    }
+
     private void gameOver() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Game Over");
         alert.setHeaderText(null);
         alert.setContentText("GAME OVER");
-
+        clearRoot();
         alert.showAndWait();
     }
 
@@ -374,8 +423,4 @@ public class Main extends Application {
         alert.showAndWait();
     }
 
-    private void ButtonEdit() {
-//        String str = dataView.getSelectionModel().getSelectedItem();
-        EditTopicDialog edit = new EditTopicDialog();
-    }
 }
