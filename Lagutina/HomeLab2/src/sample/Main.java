@@ -271,7 +271,7 @@ public class Main extends Application {
         label.setPrefHeight(100);
         label.setAlignment(Pos.CENTER);
         label.setBackground(new Background(new BackgroundFill(Color.BISQUE, null, null)));
-        System.out.println(label.getText());
+//        System.out.println(label.getText());
         label.setTextFill(Color.BLACK);
         label.setStyle("-fx-font-size: 80");
 
@@ -315,7 +315,8 @@ public class Main extends Application {
             if (index != -1) {
                 hBox.getChildren().set(index, createLabelsinWords(charWord[index]));
                 numberOfLetter++;
-                System.out.println(numberOfLetter);
+            } else {
+//                System.out.println(numberOfLetter);
                 if (numberOfLetter == word.length()) {
                     rewriteRecord();
                     System.out.println("новое слово!");
@@ -323,7 +324,6 @@ public class Main extends Application {
                     numberOfLetter = 0;
                     return;
                 }
-            } else {
                 return;
             }
         }
@@ -358,7 +358,7 @@ public class Main extends Application {
                 System.out.println(keyEvent.getText());
             } else {
                         counting.setCounting(counting.getCounting() - 1);
-                        System.out.println(keyEvent.getText());
+//                        System.out.println(keyEvent.getText());
 
                     }
                     node.setVisible(false);
@@ -372,6 +372,7 @@ public class Main extends Application {
                 boolean indexOfLetter = word.contains(node.getText());
                 if (indexOfLetter) {
                     try {
+                        System.out.println(node.getText());
                         showLetter(node.getText());
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -380,7 +381,7 @@ public class Main extends Application {
                     counting.setCounting(counting.getCounting() - 1);
                     if (counting.getCounting() == 0)
                         gameOver();
-                    System.out.println("сделал");
+//                    System.out.println("сделал");
                 }
                 node.setVisible(false);
             }
