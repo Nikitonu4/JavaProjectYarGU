@@ -26,6 +26,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Main extends Application {
+    private HBox hBox = new HBox(50);
 
     private static char[] Alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
     private static int alphabetLength = Alphabet.length;
@@ -41,7 +42,8 @@ public class Main extends Application {
     private ObservableList<String> Math = FXCollections.observableArrayList();
     private String topic = "Animal"; //тема на настоящий момент
     private String word = ""; //слово которое загадываем
-    private ObservableList<String> mainTopic = Animal;
+    private ObservableList<Integer> records = FXCollections.observableArrayList();
+//    private int counting = 15;
 
 //    public void starting(){
 //        try{
@@ -72,10 +74,11 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException {
         BorderPane root = new BorderPane();
-
+//root.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
         root.setTop(createMenu());
         root.setBottom(createFlowPane());
-        root.setCenter(createHbox("Animal"));
+        root.setCenter(createHbox(topic));
+        root.setRight(createVbox());
         root.setStyle("-fx-font-size: 20");
         primaryStage.setTitle("Guess the word");
         Scene scene = new Scene(root, 1080, 900);
@@ -187,39 +190,41 @@ public class Main extends Application {
     }
 
     private HBox createHbox(String nameFile) throws FileNotFoundException {
-        HBox hBox = new HBox(50);
         hBox.setPadding(new Insets(40));
-        FlowPane.setMargin(hBox, new Insets(40.0, 40.0, 40.0, 40.0));
+        HBox.setMargin(hBox, new Insets(40.0, 40.0, 40.0, 40.0));
         word = returnedWord(nameFile); //глобальщина
+        char empty = 0;
 
         char[] charWord = word.toCharArray(); //делаем массив из строки
         for (int i = 0; i < word.length(); i++) {
-            hBox.getChildren().add(createLabelsinWords(charWord[i]));
-            hBox.getChildren().set(i, createLabelsinWords(charWord[i]));
+            hBox.getChildren().add(createLabelsinWords(empty));
+            hBox.getChildren().set(i, createLabelsinWords(empty));
             HBox.setHgrow(hBox, Priority.ALWAYS);
         }
+        System.out.println("Слово:" + word);
 
-        System.out.println("Первая буква:" + hBox.getChildren().get(0).toString());
-
-        System.out.println(word);
-//        hBox.getChildren().get(2).add(createLabelsinWords(charWord[2]));
-
-        hBox.getChildren().get(2);
-        for (int i = 0; i < word.length(); i++) {
-            System.out.println("Буква:" + hBox.getChildren().get(i));
-        }
         return hBox;
     }
 
-    private Label createLabelsinWords(char s) {
+    private VBox createVbox() {
+        VBox vbox = new VBox();
+        Record recordNow = new Record(15, 0, 0, 0);
 
-        Label label = new Label("");
+        vbox.setPadding(new Insets(40));
+        Label label = new Label("Очков сейчас:" + recordNow.getRecordNow());
+        vbox.getChildren().add(label);
+
+        return vbox;
+    }
+
+    private Label createLabelsinWords(char s) {
+        Label label = new Label(s + "");
         label.setPrefWidth(100);
         label.setPrefHeight(100);
         label.setAlignment(Pos.CENTER);
         label.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
         System.out.println(label.getText());
-        label.setTextFill(Color.WHITE);
+        label.setTextFill(Color.BLACK);
         label.setStyle("-fx-font-size: 80");
 
         return label;
@@ -230,11 +235,13 @@ public class Main extends Application {
 //        Image image = new Image(input);
 //        ImageView imageView = new ImageView(image);
 //потом разобраться в фотке
+
         FlowPane pane = new FlowPane();
         pane.setPadding(new Insets(40));
         FlowPane.setMargin(pane, new Insets(0.0, 10.0, 20.0, 0.0));
         pane.setHgap(17);
         pane.setVgap(17);
+
         pane.setStyle("-fx-font-size: 20");
         for (int i = 0; i < alphabetLength; i++)
             pane.getChildren().add(createLabels(Alphabet[i]));
@@ -255,25 +262,24 @@ public class Main extends Application {
         return label;
     }
 
-    private void showLetter(String letter) {
+    private void showLetter(String letter) { //открытие буквы
         char[] charWord = word.toCharArray(); //делаем массив из строки
         for (int i = 0; i < word.length(); i++) {
-            word.indexOf(letter, i);
-
-
+            int index = word.indexOf(letter, i); //если несколько вхождений, начинаем с индекса последнего вхождения
+            if (index != -1) {
+                hBox.getChildren().set(index, createLabelsinWords(charWord[index]));
+            }
         }
-        System.out.println(letter);
     }
 
     private void addTranslateListener(Label node) {
 
-//        scene.setOnKeyPressed(keyEvent -> {
-//            if(arr.stream().anyMatch(t->{ return keyEvent.getText().equals(t.getText().toLowerCase()); }))
+//        node.setOnKeyPressed(keyEvent -> {
+//            if(KeyEvent keyEvent.stream().anyMatch(t-> keyEvent.getText().equals(keyEvent.getText().toLowerCase()))
 //                arr.stream().forEach(t->{
 //                    if(keyEvent.getText().equals(t.getText().toLowerCase())) {
 //                        t.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-//                    }else
-//                        t.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+//                    }
 //                });
 //        });
 
@@ -284,22 +290,19 @@ public class Main extends Application {
                 boolean indexOfLetter = word.contains(node.getText());
                 if (indexOfLetter) {
                     showLetter(node.getText());
-                    node.setVisible(false);
+                } else {
+                    //тут надо минуснуть счетчик
                 }
-//                node.setTextFill(Color.RED);
-
-//                if(node.setText() == )
-//                if(буква есть в слове)
-
+                node.setVisible(false);
             }
         });
 
-        node.setOnMouseEntered((MouseEvent me) -> {
-            node.setStyle("-fx-font-size: 30");
+        node.setOnMouseEntered((MouseEvent m) -> {
+            node.setStyle("-fx-font-size: 40");
             node.requestFocus();
         });
 
-        node.setOnMouseExited((MouseEvent me) -> {
+        node.setOnMouseExited((MouseEvent m) -> {
             node.setStyle("-fx-font-size: 20");
         });
     }
