@@ -27,7 +27,7 @@ import java.util.Scanner;
 
 public class Main extends Application {
     private HBox hBox = new HBox(50);
-
+    private FlowPane pane = new FlowPane();
     private static char[] Alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
     private static int alphabetLength = Alphabet.length;
     private final Font[] fonts = {
@@ -43,7 +43,7 @@ public class Main extends Application {
     private String topic = "Animal"; //тема на настоящий момент
     private String word = ""; //слово которое загадываем
     private ObservableList<Integer> records = FXCollections.observableArrayList();
-    private int counting = 15;
+
 
 //    public void starting(){
 //        try{
@@ -86,6 +86,17 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    private void clearRoot() {
+        hBox.getChildren().clear();
+        pane.getChildren().clear();
+        try {
+            createHbox(topic);
+            createFlowPane();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     private MenuBar createMenu() {
 
         Menu TopicMenu = new Menu("Topic");
@@ -104,22 +115,23 @@ public class Main extends Application {
 
         animalTopic.setOnAction((ActionEvent event) -> {
             topic = "Animal";
+            clearRoot();
         });
 
         cityTopic.setOnAction((ActionEvent event) -> {
             topic = "City";
+            clearRoot();
         });
 
         flowerTopic.setOnAction((ActionEvent event) -> {
             topic = "Flower";
+            clearRoot();
         });
 
         mathTopic.setOnAction((ActionEvent event) -> {
             topic = "Math";
+            clearRoot();
         });
-
-
-        /////////////////////////
 
         Menu editMenu = new Menu("Edit");
         editMenu.setStyle("-fx-font-size: 20");
@@ -132,18 +144,11 @@ public class Main extends Application {
 
 //        MenuItem choiceTopic = new MenuItem("Choosing a topic for words");
 
-        Menu editTopic = new Menu("Choosing a topic for words");
 
-        ObservableList<String> topics = FXCollections.observableArrayList("Animal", "City", "Flower", "Math");
-        ComboBox<String> topicsComboBox = new ComboBox<String>(topics);
-        topicsComboBox.setValue("Animal"); //по умолчанию
-        topicsComboBox.setOnAction(event -> topic = topicsComboBox.getValue());
-
-
-        editTopic.setStyle("-fx-font-size: 20");
-        MenuItem tCB = new MenuItem();
-
-        editTopic.getItems().add(tCB);
+//        editTopic.setStyle("-fx-font-size: 20");
+//        MenuItem tCB = new MenuItem();
+//
+//        editTopic.getItems().add(tCB);
 
 //        Menu viewMenu = new Menu("View");
 //        viewMenu.setStyle("-fx-font-size: 20");
@@ -283,7 +288,7 @@ public class Main extends Application {
 //        ImageView imageView = new ImageView(image);
 //потом разобраться в фотке
 
-        FlowPane pane = new FlowPane();
+
         pane.setPadding(new Insets(40));
         FlowPane.setMargin(pane, new Insets(0.0, 10.0, 20.0, 0.0));
         pane.setHgap(17);
@@ -341,8 +346,6 @@ public class Main extends Application {
                     showLetter(node.getText());
                 } else {
                     counting--;
-//                    createHbox("City");
-                    //тут надо минуснуть счетчик
                 }
                 node.setVisible(false);
             }
