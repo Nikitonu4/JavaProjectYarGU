@@ -95,9 +95,20 @@ public class Main extends Application {
             ButtonEdit();
         });
         editMenu.getItems().add(editWords);
-        MenuItem choiceTopic = new MenuItem("Choosing a topic for words");
-        choiceTopic.setStyle("-fx-font-size: 20");
-        editMenu.getItems().add(choiceTopic);
+
+//        MenuItem choiceTopic = new MenuItem("Choosing a topic for words");
+
+        Menu editTopic = new Menu("Choosing a topic for words");
+        ObservableList<String> topics = FXCollections.observableArrayList("Animal", "City", "Flower", "Math");
+        ComboBox<String> topicsComboBox = new ComboBox<String>(topics);
+        topicsComboBox.setValue("Animal"); //по умолчанию
+        topicsComboBox.setOnAction(event -> topic = topicsComboBox.getValue());
+
+
+        editTopic.setStyle("-fx-font-size: 20");
+        MenuItem tCB = new MenuItem();
+
+        editTopic.getItems().add(tCB);
 
 //        Menu viewMenu = new Menu("View");
 //        viewMenu.setStyle("-fx-font-size: 20");
@@ -295,6 +306,7 @@ public class Main extends Application {
                     showLetter(node.getText());
                 } else {
                     counting--;
+//                    createHbox("City");
                     //тут надо минуснуть счетчик
                 }
                 node.setVisible(false);
