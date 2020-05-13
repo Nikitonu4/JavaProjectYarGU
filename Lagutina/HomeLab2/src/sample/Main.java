@@ -2,8 +2,6 @@ package sample;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,20 +20,17 @@ import java.io.PrintWriter;
 import java.util.*;
 
 public class Main extends Application {
-    private HBox hBox = new HBox(50);
-    private FlowPane pane = new FlowPane();
     private static char[] Alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
     private static int alphabetLength = Alphabet.length;
-    private final Font[] fonts = {
-            new Font("Verdana Bold", 20),
-            new Font("Arial Italic", 20),
-            new Font("Tahoma", 20),
-            new Font("Times New Roman", 20)
-    };
+    public Counting counting = new Counting(15);
+    private HBox hBox = new HBox(50);
+    private VBox vBox = new VBox();
+    private FlowPane pane = new FlowPane();
+    private String font = "Tahoma";
+    private String back = "2e1201";
     private String topic = "Animal"; //тема на настоящий момент
     private String word = ""; //слово которое загадываем
     private int numberOfLetter = 0;
-    public Counting counting = new Counting(15);
     private int numberOfWords = 0;
 
     public static void main(String[] args) {
@@ -45,7 +40,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException {
         BorderPane root = new BorderPane();
-        root.setBackground(new Background(new BackgroundFill(Color.web("2e1201"), CornerRadii.EMPTY, Insets.EMPTY)));
+        root.setBackground(new Background(new BackgroundFill(Color.web(back), CornerRadii.EMPTY, Insets.EMPTY)));
         root.setTop(createMenu());
         root.setBottom(createFlowPane());
         root.setCenter(createHbox(topic));
@@ -60,29 +55,27 @@ public class Main extends Application {
     private void clearRoot() {
         hBox.getChildren().clear();
         pane.getChildren().clear();
+        vBox.getChildren().clear();
         try {
             createHbox(topic);
             createFlowPane();
+            createVbox();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
     private MenuBar createMenu() {
-
         Menu TopicMenu = new Menu("Topic");
-//        TopicMenu.setStyle("-fx-background-color: #2e1201; -fx-font-size: 20; -fx-text-fill: #e9d5c4");
 
         MenuItem animalTopic = new MenuItem("Animal");
         MenuItem cityTopic = new MenuItem("City");
         MenuItem flowerTopic = new MenuItem("Flower");
         MenuItem mathTopic = new MenuItem("Math");
-//animalTopic.setStyle("-fx-background-color: #2e1201; -fx-font-size: 20; -fx-text-fill: #e9d5c4");
         TopicMenu.getItems().add(animalTopic);
         TopicMenu.getItems().add(cityTopic);
         TopicMenu.getItems().add(flowerTopic);
         TopicMenu.getItems().add(mathTopic);
-
 
         animalTopic.setOnAction((ActionEvent event) -> {
             topic = "Animal";
@@ -104,15 +97,6 @@ public class Main extends Application {
             clearRoot();
         });
 
-        Menu editMenu = new Menu("Edit");
-//        editMenu.setStyle("-fx-font-size: 20");
-        MenuItem editWords = new MenuItem("Edit list of words");
-//        editWords.setStyle("-fx-font-size: 20");
-        editWords.setOnAction((ActionEvent event) -> {
-//            ButtonEdit();
-        });
-        editMenu.getItems().add(editWords);
-
         Menu recordsMenu = new Menu("Records");
         MenuItem recordsItem = new MenuItem("Records");
         recordsMenu.getItems().add(recordsItem);
@@ -133,7 +117,6 @@ public class Main extends Application {
             }
         });
 
-
         Menu exitMenu = new Menu("Exit");
         MenuItem exitItem = new MenuItem("Exit");
         exitItem.setOnAction(e -> {
@@ -145,47 +128,46 @@ public class Main extends Application {
             }
             Platform.exit();
         });
+
         exitMenu.getItems().add(exitItem);
-        Menu viewMenu = createViewMenu();
-        MenuBar bar = new MenuBar(editMenu, viewMenu, exitMenu, TopicMenu, recordsMenu);
-        return bar;
+
+        Menu fontMenu = createFontMenu();
+        return new MenuBar(TopicMenu, fontMenu, recordsMenu, exitMenu);
     }
 
-    private Menu createViewMenu() {
-        Menu menuEdit = new Menu("View");
-        Menu menuFont = new Menu("Font selection");
-        ToggleGroup groupFont = new ToggleGroup();
-        for (int i = 0; i < fonts.length - 1; i++) {
-            RadioMenuItem itemFont = new RadioMenuItem(fonts[i].getName());
-            itemFont.setUserData(fonts[i]);
-            itemFont.setToggleGroup(groupFont);
-            menuFont.getItems().add(itemFont);
-        }
-        MenuItem defaultFont = new MenuItem("Default Font");
-        defaultFont.setDisable(true);
+    private Menu createFontMenu() {
+        Menu FontMenu = new Menu("Fonts");
+        MenuItem font1 = new MenuItem("Verdana Bold");
+        MenuItem font2 = new MenuItem("Arial Italic");
+        MenuItem font3 = new MenuItem("Tahoma");
+        MenuItem font4 = new MenuItem("Times New Roman");
 
-        defaultFont.setOnAction((ActionEvent t) -> {
-//            .setFont(fonts[3]);
-            groupFont.getSelectedToggle().setSelected(false);
-            defaultFont.setDisable(true);
+        FontMenu.getItems().add(font1);
+        FontMenu.getItems().add(font2);
+        FontMenu.getItems().add(font3);
+        FontMenu.getItems().add(font4);
+
+        font1.setOnAction((ActionEvent event) -> {
+            font = "Verdana Bold";
+            clearRoot();
         });
 
-        groupFont.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-            public void changed(ObservableValue<? extends Toggle> ov,
-                                Toggle old_toggle, Toggle new_toggle) {
-                if (groupFont.getSelectedToggle() != null) {
-                    Font font = (Font) groupFont.getSelectedToggle().getUserData();
-//                    description.setFont(font);
-                    defaultFont.setDisable(false);
-                } else {
-                    defaultFont.setDisable(true);
-                }
-            }
+        font2.setOnAction((ActionEvent event) -> {
+            font = "Arial Italic";
+            clearRoot();
         });
 
-        menuEdit.getItems().addAll(menuFont, defaultFont);
-//        menuEdit.setStyle("-fx-background-color: #231309; -fx-background-insets: 0,1,2,3,4; -fx-background-radius: 5; -fx-font-size: 15");
-        return menuEdit;
+        font3.setOnAction((ActionEvent event) -> {
+            font = "Tahoma";
+            clearRoot();
+        });
+
+        font4.setOnAction((ActionEvent event) -> {
+            font = "Times New Roman";
+            clearRoot();
+        });
+
+        return FontMenu;
     }
 
     private String returnedWord(String nameFile) throws FileNotFoundException { //метод возвращает рандомное слово из nameFile
@@ -205,7 +187,6 @@ public class Main extends Application {
         word = returnedWord(nameFile);
         char empty = 0;
 
-        char[] charWord = word.toCharArray();
         for (int i = 0; i < word.length(); i++) {
             hBox.getChildren().add(createLabelsinWords(empty));
             hBox.getChildren().set(i, createLabelsinWords(empty));
@@ -216,64 +197,50 @@ public class Main extends Application {
         return hBox;
     }
 
-    private VBox createVbox() { //вывод очков
-        VBox vbox = new VBox();
-        vbox.setPadding(new Insets(40));
+    private VBox createVbox() {
+        vBox.setPadding(new Insets(40));
 
         Label label = new Label("Очков сейчас: " + counting.getCounting());
         label.setStyle("-fx-font-size: 20; -fx-text-fill: #e9d5c4;");
+        label.setFont(new Font(font, 20));
         counting.countingProperty().addListener((observable, oldValue, newValue) ->
                 label.setText(counting.toString()));
-//        label.setStyle("-fx-font-size: 20");
-        vbox.getChildren().addAll(label);
-//        pane.setStyle("-fx-font-size: 20; -fx-text-fill: #e9d5c4");
-        return vbox;
+        vBox.getChildren().addAll(label);
+        return vBox;
     }
 
     private Label createLabelsinWords(char s) {
         Label label = new Label(s + "");
         label.setPrefWidth(100);
         label.setPrefHeight(100);
-        label.setAlignment(Pos.CENTER);
-//        label.setBackground(new Background(new BackgroundFill(Color.BISQUE, null, null)));
-//        label.setTextFill(Color.BLACK);
-        label.setStyle("-fx-font-size: 50; -fx-text-fill: #e9d5c4; -fx-border-width: 4; -fx-border-radius: 5; -fx-border-color: #d9ac8d; -fx-alignment: center");
-
+        label.setFont(new Font(font, 50));
+        label.setStyle("-fx-text-fill: #e9d5c4; -fx-border-width: 4; -fx-border-radius: 5; -fx-border-color: #d9ac8d; -fx-alignment: center");
         return label;
     }
 
     private FlowPane createFlowPane() {
-//        InputStream input= getClass().getResourceAsStream("yk.jpg");
-//        Image image = new Image(input);
-//        ImageView imageView = new ImageView(image);
-//потом разобраться в фотке
-
         pane.setPadding(new Insets(40));
         FlowPane.setMargin(pane, new Insets(0.0, 10.0, 20.0, 0.0));
         pane.setHgap(17);
         pane.setVgap(17);
 
-//        pane.setStyle("-fx-font-size: ;" + "-fx-text-fill: #e9d5c4");
         for (int i = 0; i < alphabetLength; i++)
             pane.getChildren().add(createLabels(Alphabet[i]));
         return pane;
     }
 
     private Label createLabels(char s) {
-
         Label label = new Label(s + "");
         label.setPrefWidth(74);
         label.setPrefHeight(74);
         label.setAlignment(Pos.CENTER);
-        label.setStyle("-fx-font-size: 40; -fx-text-fill: #e9d5c4; -fx-border-width: 4; -fx-border-radius: 10; -fx-border-color: #d9ac8d; -fx-alignment: center");
-
-//        label.setBackground(new Background(new BackgroundFill(Color.web("e9d5c4"), null, null)));
-//        label.setTextFill(Color.WHITE);
+        label.setFont(new Font(font, 40));
+        label.setStyle(" -fx-text-fill: #e9d5c4; -fx-border-width: 4; -fx-border-radius: 10; -fx-border-color: #d9ac8d; -fx-alignment: center");
         addTranslateListener(label);
         return label;
     }
 
-    private void showLetter(String letter) throws FileNotFoundException { //открытие буквы
+    private void showLetter(String letter) { //открытие буквы
 
         char[] charWord = word.toCharArray(); //делаем массив из строки
         int index = word.indexOf(letter); //первое вхождение
@@ -281,13 +248,13 @@ public class Main extends Application {
         numberOfLetter++;
 
         if (word.indexOf(letter, index + 1) == -1) {  //если единственная буква
-            if (numberOfLetter == word.length()) {  //если это был,а последняя буква -> новое слово
+            if (numberOfLetter == word.length()) {
                 System.out.println("Новое слово!");
                 numberOfWords++;
+                System.out.println("Количество угаданных слов:" + numberOfWords);
                 clearRoot();
                 numberOfLetter = 0;
             }
-            System.out.println("Количетво угаданных слов:" + numberOfWords);
             return;
         }
 
@@ -304,11 +271,9 @@ public class Main extends Application {
             numberOfWords++;
             clearRoot();
             numberOfLetter = 0;
-            System.out.println("Количетво угаданных слов:" + numberOfWords);
-            return;
+            System.out.println("Количество угаданных слов:" + numberOfWords);
         }
     }
-
 
     private void rewriteRecord() throws FileNotFoundException {
         Scanner read = new Scanner(new FileReader("Record.txt"));
@@ -325,26 +290,17 @@ public class Main extends Application {
         out.write("");
         for (int i = 0; i < str.length; i++)
             out.print(str[i] + " ");
-
-
         out.close();
     }
 
     private void addTranslateListener(Label node) {
-
         node.setOnKeyPressed(keyEvent -> {
-            boolean indexOfLetter = word.contains(keyEvent.getText());
-            if (indexOfLetter) {
-                try {
-                    showLetter(keyEvent.getText());
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                System.out.println(keyEvent.getText());
-            } else {
-                        counting.setCounting(counting.getCounting() - 1);
+                    boolean indexOfLetter = word.contains(keyEvent.getText());
+                    if (indexOfLetter) {
+                        showLetter(keyEvent.getText());
 //                        System.out.println(keyEvent.getText());
-
+                    } else {
+                        counting.setCounting(counting.getCounting() - 1);
                     }
                     node.setVisible(false);
                 }
@@ -356,12 +312,8 @@ public class Main extends Application {
             if ((mouseEvent.getClickCount() == 1) && (mouseEvent.getButton() == MouseButton.PRIMARY)) {
                 boolean indexOfLetter = word.contains(node.getText());
                 if (indexOfLetter) {
-                    try {
-                        System.out.println(node.getText());
-                        showLetter(node.getText());
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+//                    System.out.println(node.getText());
+                    showLetter(node.getText());
                 } else {
                     counting.setCounting(counting.getCounting() - 1);
                     if (counting.getCounting() == 0) {
@@ -370,24 +322,22 @@ public class Main extends Application {
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         }
-                        System.out.println("Количетво угаданных слов:" + numberOfWords);
                         gameOver();
                         counting.setCounting(15);
                     }
-
-
-//                    System.out.println("сделал");
                 }
                 node.setVisible(false);
             }
         });
 
         node.setOnMouseEntered((MouseEvent m) -> {
+            node.setFont(new Font(font, 50));
             node.setStyle("-fx-font-size: 50; -fx-text-fill: #e9d5c4; -fx-border-width: 4; -fx-border-radius: 10; -fx-border-color: #d9ac8d; -fx-alignment: center");
             node.requestFocus();
         });
 
         node.setOnMouseExited((MouseEvent m) -> {
+            node.setFont(new Font(font, 40));
             node.setStyle("-fx-font-size: 40; -fx-text-fill: #e9d5c4; -fx-border-width: 4; -fx-border-radius: 10; -fx-border-color: #d9ac8d; -fx-alignment: center");
         });
     }
@@ -409,14 +359,4 @@ public class Main extends Application {
         clearRoot();
         alert.showAndWait();
     }
-
-    private void showMessage(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.getDialogPane().setStyle("-fx-font-size: 20px;");
-        alert.showAndWait();
-    }
-
 }
