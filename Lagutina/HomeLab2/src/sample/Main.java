@@ -118,23 +118,20 @@ public class Main extends Application {
         recordsMenu.getItems().add(recordsItem);
 
         recordsItem.setOnAction(ActionEvent -> {
+            try {
+                rewriteRecord();
+                Scanner read = new Scanner(new FileReader("Record.txt"));
 
-                    Scanner read = null;
-                    try {
-                        read = new Scanner(new FileReader("Records.txt"));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    String[] str = read.nextLine().split(" +");
-                    Integer[] inti = new Integer[3];
-                    inti[0] = Integer.parseInt(str[0]);
-                    inti[1] = Integer.parseInt(str[1]);
-                    inti[2] = Integer.parseInt(str[2]);
-                    Arrays.sort(inti);
-                    viewRecords(inti);
-
-                }
-        );
+                String[] str = read.nextLine().split(" +");
+                Integer[] inti = new Integer[3];
+                inti[0] = Integer.parseInt(str[0]);
+                inti[1] = Integer.parseInt(str[1]);
+                inti[2] = Integer.parseInt(str[2]);
+                viewRecords(inti);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
 
 
 //        MenuItem choiceTopic = new MenuItem("Choosing a topic for words");
@@ -347,17 +344,21 @@ public class Main extends Application {
 
 
     private void rewriteRecord() throws FileNotFoundException {
-        Scanner read = new Scanner(new FileReader("Records.txt"));
+        Scanner read = new Scanner(new FileReader("Record.txt"));
         String[] str = read.nextLine().split(" +");
         for (int i = 0; i < 3; i++)
-            if (Integer.parseInt(str[i]) < numberOfWords)
+            if (Integer.parseInt(str[i]) < numberOfWords) {
                 str[i] = numberOfWords + "";
-        read.close();
+                break;
+            }
 
+        read.close();
+        Arrays.sort(str);
         PrintWriter out = new PrintWriter("Record.txt");
         out.write("");
         for (int i = 0; i < str.length; i++)
             out.print(str[i] + " ");
+
 
         out.close();
     }
@@ -428,7 +429,7 @@ public class Main extends Application {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Records");
         alert.setHeaderText(null);
-        alert.setContentText("First record: " + inti[0] + " слов" + "\n" + "Second record: " + inti[1] + " слов" + "\n" + "Thid record: " + inti[2] + " слов");
+        alert.setContentText("First record: " + inti[0] + "\n" + "Second record: " + inti[1] + "\n" + "Thid record: " + inti[2]);
         clearRoot();
         alert.showAndWait();
     }
