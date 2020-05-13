@@ -45,14 +45,14 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException {
         BorderPane root = new BorderPane();
-//root.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+        root.setBackground(new Background(new BackgroundFill(Color.web("2e1201"), CornerRadii.EMPTY, Insets.EMPTY)));
         root.setTop(createMenu());
         root.setBottom(createFlowPane());
         root.setCenter(createHbox(topic));
         root.setLeft(createVbox());
         root.setStyle("-fx-font-size: 20");
         primaryStage.setTitle("Guess the word");
-        Scene scene = new Scene(root, 1080, 900);
+        Scene scene = new Scene(root, 1280, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -155,6 +155,7 @@ public class Main extends Application {
         MenuItem exitItem = new MenuItem("Exit");
         exitItem.setOnAction(e -> {
             try {
+                rewriteRecord();
                 stop();
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -165,26 +166,6 @@ public class Main extends Application {
         Menu viewMenu = createViewMenu();
         return new MenuBar(editMenu, viewMenu, exitMenu, TopicMenu, recordsMenu);
     }
-
-//    Scanner read = new Scanner(new FileReader("Animal.txt"));
-//    reading(Animal, read);
-//    read = new Scanner(new FileReader("City.txt"));
-//    reading(City, read);
-//    read = new Scanner(new FileReader("Flower.txt"));
-//    reading(Flower, read);
-//    read = new Scanner(new FileReader("Math.txt"));
-//    reading(Math, read);
-//
-//
-//} catch (IOException e) {
-//        System.out.println("\nUnfortunately, the data from the file did not load.");
-//        }
-//        }
-//private void reading(ObservableList<String> file, Scanner read) {
-//        String []str = read.nextLine().split(" +");
-//        Collections.addAll(file, str);
-//        read.close();
-//        }
 
     private Menu createViewMenu() {
         Menu menuEdit = new Menu("View");
@@ -222,7 +203,7 @@ public class Main extends Application {
         return menuEdit;
     }
 
-    private String returnedWord(String nameFile) throws FileNotFoundException { //штука возвращает рандомное слово из nameFile
+    private String returnedWord(String nameFile) throws FileNotFoundException { //метод возвращает рандомное слово из nameFile
         Scanner read = new Scanner(new FileReader(nameFile + ".txt"));
         String[] str = read.nextLine().split(" +");
         ArrayList<String> file = new ArrayList<>();
@@ -232,34 +213,35 @@ public class Main extends Application {
         return file.get(numberR);
     }
 
-    private HBox createHbox(String nameFile) throws FileNotFoundException {
+    private HBox createHbox(String nameFile) throws FileNotFoundException { //создание загаданного слова
+
         hBox.setPadding(new Insets(40));
         HBox.setMargin(hBox, new Insets(40.0, 40.0, 40.0, 40.0));
-        word = returnedWord(nameFile); //глобальщина
+        word = returnedWord(nameFile);
         char empty = 0;
 
-        char[] charWord = word.toCharArray(); //делаем массив из строки
+        char[] charWord = word.toCharArray();
         for (int i = 0; i < word.length(); i++) {
             hBox.getChildren().add(createLabelsinWords(empty));
             hBox.getChildren().set(i, createLabelsinWords(empty));
             HBox.setHgrow(hBox, Priority.ALWAYS);
         }
-        System.out.println("Слово:" + word);
+        System.out.println("Новое слово:" + word);
 
         return hBox;
     }
 
-    private VBox createVbox() {
+    private VBox createVbox() { //вывод очков
         VBox vbox = new VBox();
         vbox.setPadding(new Insets(40));
 
-        Label cNow = new Label("Очков сейчас:");
-        Label label = new Label(counting.getCounting() + "");
+        Label label = new Label("Очков сейчас: " + counting.getCounting());
+        label.setStyle("-fx-font-size: 20; -fx-text-fill: #e9d5c4");
         counting.countingProperty().addListener((observable, oldValue, newValue) ->
                 label.setText(counting.toString()));
-        label.setStyle("-fx-font-size: 20");
-        vbox.getChildren().addAll(cNow, label);
-//        vbox.getChildren().add(label);
+//        label.setStyle("-fx-font-size: 20");
+        vbox.getChildren().addAll(label);
+//        pane.setStyle("-fx-font-size: 20; -fx-text-fill: #e9d5c4");
         return vbox;
     }
 
@@ -282,13 +264,12 @@ public class Main extends Application {
 //        ImageView imageView = new ImageView(image);
 //потом разобраться в фотке
 
-
         pane.setPadding(new Insets(40));
         FlowPane.setMargin(pane, new Insets(0.0, 10.0, 20.0, 0.0));
         pane.setHgap(17);
         pane.setVgap(17);
 
-        pane.setStyle("-fx-font-size: 20");
+//        pane.setStyle("-fx-font-size: ;" + "-fx-text-fill: #e9d5c4");
         for (int i = 0; i < alphabetLength; i++)
             pane.getChildren().add(createLabels(Alphabet[i]));
         return pane;
@@ -297,10 +278,12 @@ public class Main extends Application {
     private Label createLabels(char s) {
 
         Label label = new Label(s + "");
-        label.setPrefWidth(60);
-        label.setPrefHeight(60);
+        label.setPrefWidth(74);
+        label.setPrefHeight(74);
         label.setAlignment(Pos.CENTER);
-        label.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+        label.setStyle("-fx-font-size: 40; -fx-text-fill: #e9d5c4; -fx-border-width: 4; -fx-border-radius: 10; -fx-border-color: #d9ac8d; -fx-alignment: center");
+
+//        label.setBackground(new Background(new BackgroundFill(Color.web("e9d5c4"), null, null)));
         label.setTextFill(Color.WHITE);
         addTranslateListener(label);
         return label;
@@ -314,7 +297,7 @@ public class Main extends Application {
         numberOfLetter++;
 
         if (word.indexOf(letter, index + 1) == -1) {  //если единственная буква
-            if (numberOfLetter == word.length()) {  //если это была последняя буква -> новое слово
+            if (numberOfLetter == word.length()) {  //если это был,а последняя буква -> новое слово
                 System.out.println("Новое слово!");
                 numberOfWords++;
                 clearRoot();
@@ -416,12 +399,12 @@ public class Main extends Application {
         });
 
         node.setOnMouseEntered((MouseEvent m) -> {
-            node.setStyle("-fx-font-size: 40");
+            node.setStyle("-fx-font-size: 50; -fx-text-fill: #e9d5c4; -fx-border-width: 4; -fx-border-radius: 10; -fx-border-color: #d9ac8d; -fx-alignment: center");
             node.requestFocus();
         });
 
         node.setOnMouseExited((MouseEvent m) -> {
-            node.setStyle("-fx-font-size: 20");
+            node.setStyle("-fx-font-size: 40; -fx-text-fill: #e9d5c4; -fx-border-width: 4; -fx-border-radius: 10; -fx-border-color: #d9ac8d; -fx-alignment: center");
         });
     }
 

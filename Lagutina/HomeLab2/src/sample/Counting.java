@@ -28,6 +28,6 @@ public class Counting {
 
     @Override
     public String toString() {
-        return getCounting() + "";
+        return "Очков сейчас: " + getCounting();
     }
 }
