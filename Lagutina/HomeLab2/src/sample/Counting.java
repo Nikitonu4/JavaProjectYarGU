@@ -3,7 +3,7 @@ package sample;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
-public class Record {
+public class Counting {
     private IntegerProperty counting;
 
     public IntegerProperty countingProperty() {
@@ -22,7 +22,7 @@ public class Record {
         return countingProperty().get();
     }
 
-    public Record(int counting) {
+    public Counting(int counting) {
         countingProperty().set(counting);
     }
 

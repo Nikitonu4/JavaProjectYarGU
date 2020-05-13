@@ -35,7 +35,7 @@ public class Main extends Application {
     private String topic = "Animal"; //тема на настоящий момент
     private String word = ""; //слово которое загадываем
     private int numberOfLetter = 0;
-    public Record counting = new Record(15);
+    public Counting counting = new Counting(15);
     private int numberOfWords = 0;
 
     public static void main(String[] args) {
@@ -255,6 +255,7 @@ public class Main extends Application {
     private VBox createVbox() {
         VBox vbox = new VBox();
         vbox.setPadding(new Insets(40));
+
         Label cNow = new Label("Очков сейчас:");
         Label label = new Label(counting.getCounting() + "");
         counting.countingProperty().addListener((observable, oldValue, newValue) ->
@@ -309,32 +310,48 @@ public class Main extends Application {
     }
 
     private void showLetter(String letter) throws FileNotFoundException { //открытие буквы
+
         char[] charWord = word.toCharArray(); //делаем массив из строки
-        for (int i = 0; i < word.length(); i++) {
-            int index = word.indexOf(letter, i); //если несколько вхождений, начинаем с индекса последнего вхождения
-            if (index != -1) {
-                hBox.getChildren().set(index, createLabelsinWords(charWord[index]));
-                numberOfLetter++;
-            } else {
-//                System.out.println(numberOfLetter);
-                if (numberOfLetter == word.length()) {
-                    rewriteRecord();
-                    System.out.println("новое слово!");
-                    clearRoot();
-                    numberOfLetter = 0;
-                    return;
-                }
-                return;
+        int index = word.indexOf(letter); //первое вхождение
+        hBox.getChildren().set(index, createLabelsinWords(charWord[index]));
+        numberOfLetter++;
+
+        if (word.indexOf(letter, index + 1) == -1) {  //если единственная буква
+            if (numberOfLetter == word.length()) {  //если это была последняя буква -> новое слово
+                System.out.println("Новое слово!");
+                numberOfWords++;
+                clearRoot();
+                numberOfLetter = 0;
             }
+            System.out.println("Количетво угаданных слов:" + numberOfWords);
+            return;
+        }
+
+        while (true) {
+            index = word.indexOf(letter, index + 1);
+            if (index == -1)
+                break;
+            hBox.getChildren().set(index, createLabelsinWords(charWord[index]));
+            numberOfLetter++;
+        }
+
+        if (numberOfLetter == word.length()) {  //если это была последняя буква -> новое слово
+            System.out.println("Новое слово!");
+            numberOfWords++;
+            clearRoot();
+            numberOfLetter = 0;
+            System.out.println("Количетво угаданных слов:" + numberOfWords);
+            return;
         }
     }
+
 
     private void rewriteRecord() throws FileNotFoundException {
         Scanner read = new Scanner(new FileReader("Records.txt"));
         String[] str = read.nextLine().split(" +");
         for (int i = 0; i < 3; i++)
-            if (Integer.parseInt(str[i]) < counting.getCounting())
-                str[i] = counting.toString();
+            if (Integer.parseInt(str[i]) < numberOfWords)
+                str[i] = numberOfWords + "";
         read.close();
 
         PrintWriter out = new PrintWriter("Record.txt");
@@ -379,8 +396,18 @@ public class Main extends Application {
                     }
                 } else {
                     counting.setCounting(counting.getCounting() - 1);
-                    if (counting.getCounting() == 0)
+                    if (counting.getCounting() == 0) {
+                        try {
+                            rewriteRecord();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("Количетво угаданных слов:" + numberOfWords);
                         gameOver();
+                        counting.setCounting(15);
+                    }
+
+
 //                    System.out.println("сделал");
                 }
                 node.setVisible(false);
