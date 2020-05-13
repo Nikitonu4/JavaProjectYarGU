@@ -71,12 +71,13 @@ public class Main extends Application {
     private MenuBar createMenu() {
 
         Menu TopicMenu = new Menu("Topic");
+//        TopicMenu.setStyle("-fx-background-color: #2e1201; -fx-font-size: 20; -fx-text-fill: #e9d5c4");
 
         MenuItem animalTopic = new MenuItem("Animal");
         MenuItem cityTopic = new MenuItem("City");
         MenuItem flowerTopic = new MenuItem("Flower");
         MenuItem mathTopic = new MenuItem("Math");
-
+//animalTopic.setStyle("-fx-background-color: #2e1201; -fx-font-size: 20; -fx-text-fill: #e9d5c4");
         TopicMenu.getItems().add(animalTopic);
         TopicMenu.getItems().add(cityTopic);
         TopicMenu.getItems().add(flowerTopic);
@@ -104,9 +105,9 @@ public class Main extends Application {
         });
 
         Menu editMenu = new Menu("Edit");
-        editMenu.setStyle("-fx-font-size: 20");
+//        editMenu.setStyle("-fx-font-size: 20");
         MenuItem editWords = new MenuItem("Edit list of words");
-        editWords.setStyle("-fx-font-size: 20");
+//        editWords.setStyle("-fx-font-size: 20");
         editWords.setOnAction((ActionEvent event) -> {
 //            ButtonEdit();
         });
@@ -114,7 +115,6 @@ public class Main extends Application {
 
         Menu recordsMenu = new Menu("Records");
         MenuItem recordsItem = new MenuItem("Records");
-
         recordsMenu.getItems().add(recordsItem);
 
         recordsItem.setOnAction(ActionEvent -> {
@@ -134,23 +134,6 @@ public class Main extends Application {
         });
 
 
-//        MenuItem choiceTopic = new MenuItem("Choosing a topic for words");
-
-
-//        editTopic.setStyle("-fx-font-size: 20");
-//        MenuItem tCB = new MenuItem();
-//
-//        editTopic.getItems().add(tCB);
-
-//        Menu viewMenu = new Menu("View");
-//        viewMenu.setStyle("-fx-font-size: 20");
-//        MenuItem editFont = new MenuItem("Edit font");
-//        editFont.setStyle("-fx-font-size: 20");
-//        viewMenu.getItems().add(editFont);
-//        MenuItem editBackground = new MenuItem("Edit background");
-//        editBackground.setStyle("-fx-font-size: 20");
-//        viewMenu.getItems().add(editBackground);
-
         Menu exitMenu = new Menu("Exit");
         MenuItem exitItem = new MenuItem("Exit");
         exitItem.setOnAction(e -> {
@@ -164,7 +147,8 @@ public class Main extends Application {
         });
         exitMenu.getItems().add(exitItem);
         Menu viewMenu = createViewMenu();
-        return new MenuBar(editMenu, viewMenu, exitMenu, TopicMenu, recordsMenu);
+        MenuBar bar = new MenuBar(editMenu, viewMenu, exitMenu, TopicMenu, recordsMenu);
+        return bar;
     }
 
     private Menu createViewMenu() {
@@ -200,6 +184,7 @@ public class Main extends Application {
         });
 
         menuEdit.getItems().addAll(menuFont, defaultFont);
+//        menuEdit.setStyle("-fx-background-color: #231309; -fx-background-insets: 0,1,2,3,4; -fx-background-radius: 5; -fx-font-size: 15");
         return menuEdit;
     }
 
@@ -236,7 +221,7 @@ public class Main extends Application {
         vbox.setPadding(new Insets(40));
 
         Label label = new Label("Очков сейчас: " + counting.getCounting());
-        label.setStyle("-fx-font-size: 20; -fx-text-fill: #e9d5c4");
+        label.setStyle("-fx-font-size: 20; -fx-text-fill: #e9d5c4;");
         counting.countingProperty().addListener((observable, oldValue, newValue) ->
                 label.setText(counting.toString()));
 //        label.setStyle("-fx-font-size: 20");
@@ -250,10 +235,9 @@ public class Main extends Application {
         label.setPrefWidth(100);
         label.setPrefHeight(100);
         label.setAlignment(Pos.CENTER);
-        label.setBackground(new Background(new BackgroundFill(Color.BISQUE, null, null)));
-//        System.out.println(label.getText());
-        label.setTextFill(Color.BLACK);
-        label.setStyle("-fx-font-size: 80");
+//        label.setBackground(new Background(new BackgroundFill(Color.BISQUE, null, null)));
+//        label.setTextFill(Color.BLACK);
+        label.setStyle("-fx-font-size: 50; -fx-text-fill: #e9d5c4; -fx-border-width: 4; -fx-border-radius: 5; -fx-border-color: #d9ac8d; -fx-alignment: center");
 
         return label;
     }
@@ -284,7 +268,7 @@ public class Main extends Application {
         label.setStyle("-fx-font-size: 40; -fx-text-fill: #e9d5c4; -fx-border-width: 4; -fx-border-radius: 10; -fx-border-color: #d9ac8d; -fx-alignment: center");
 
 //        label.setBackground(new Background(new BackgroundFill(Color.web("e9d5c4"), null, null)));
-        label.setTextFill(Color.WHITE);
+//        label.setTextFill(Color.WHITE);
         addTranslateListener(label);
         return label;
     }
